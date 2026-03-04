@@ -17,8 +17,7 @@ A professional Flutter application demonstrating **Clean Code architecture**, **
 ## 📸 Screenshots
 | Main Directory | Male Filtered View | Female Filtered View |
 | :---: | :---: | :---: |
-| <img src="https://via.placeholder.com/200x400?text=Main+List" width="200"> | <img src="https://via.placeholder.com/200x400?text=Male+List" width="200"> | <img src="https://via.placeholder.com/200x400?text=Female+List" width="200"> |
-*(Note: Replace these placeholders with your actual screenshots from the `assets/` folder)*
+| <img src="assets/Screenshot_20260305_004110.png" width="200"> | <img src="assets/Screenshot_20260305_004218.png" width="200"> | <img src="assets/Screenshot_20260305_004239.png" width="200"> |
 
 ## ⚙️ Installation & Setup
 1. **Clone the repository:**
