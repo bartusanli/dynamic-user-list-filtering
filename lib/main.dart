@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
-// Note: Ensure your inkwellcontainers.dart file is in the same directory or update the path
+// Note: You can keep the import for inkwellcontainers if you use it elsewhere,
+// but for this specific directory logic, we are creating a dedicated Female page.
 import 'package:vize/inkwellcontainers.dart';
 
 void main() {
   runApp(const MyApp());
 }
 
-/// 1. Data Model - Professional apps use objects to handle data
+/// 1. Data Model
 class UserProfile {
   final String name;
   final String gender;
@@ -25,7 +26,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         useMaterial3: true,
-        colorSchemeSeed: Colors.blue, // Modern Material 3 theme
+        colorSchemeSeed: Colors.indigo, // Professional Indigo Theme
       ),
       home: UserDirectoryPage(),
     );
@@ -35,7 +36,6 @@ class MyApp extends StatelessWidget {
 class UserDirectoryPage extends StatelessWidget {
   UserDirectoryPage({super.key});
 
-  // 2. Data Source - In a real app, this would come from an API or Database
   final List<UserProfile> users = [
     UserProfile(name: "Peter Asnor", gender: "male"),
     UserProfile(name: "Julia Iron", gender: "female"),
@@ -55,7 +55,6 @@ class UserDirectoryPage extends StatelessWidget {
         title: const Column(
           children: [
             Text("User Directory", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            Text("Bartu Şanlı | 23220030065", style: TextStyle(fontSize: 12)),
           ],
         ),
       ),
@@ -64,7 +63,6 @@ class UserDirectoryPage extends StatelessWidget {
         itemCount: users.length,
         separatorBuilder: (context, index) => const SizedBox(height: 8),
         itemBuilder: (context, index) {
-          // Pass the full list to the tile so it can filter later
           return UserListTile(user: users[index], allUsers: users);
         },
       ),
@@ -72,18 +70,16 @@ class UserDirectoryPage extends StatelessWidget {
   }
 }
 
-/// 4. Custom Widget - Separating logic into its own class
+/// 2. Professional List Tile Widget
 class UserListTile extends StatelessWidget {
   final UserProfile user;
-  final List<UserProfile> allUsers; // Access to full list for filtering
+  final List<UserProfile> allUsers;
 
   const UserListTile({super.key, required this.user, required this.allUsers});
 
   @override
   Widget build(BuildContext context) {
     final bool isFemale = user.gender.toLowerCase() == 'female';
-
-    // Professional touch: Define colors based on gender
     final Color genderColor = isFemale ? Colors.pink : Colors.blue;
     final Color genderBackground = isFemale ? Colors.pink.shade50 : Colors.blue.shade50;
 
@@ -97,34 +93,26 @@ class UserListTile extends StatelessWidget {
         leading: CircleAvatar(
           backgroundColor: genderBackground,
           child: Text(
-            user.name[0], // Shows the first letter
+            user.name[0],
             style: TextStyle(color: genderColor, fontWeight: FontWeight.bold),
           ),
         ),
-        title: Text(
-          user.name,
-          style: const TextStyle(fontWeight: FontWeight.w600),
-        ),
-        subtitle: Text(
-          user.gender.toUpperCase(),
-          style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
-        ),
-        trailing: Icon(
-            Icons.arrow_forward_ios,
-            size: 14,
-            color: genderColor.withOpacity(0.5)
-        ),
+        title: Text(user.name, style: const TextStyle(fontWeight: FontWeight.w600)),
+        subtitle: Text(user.gender.toUpperCase()),
+        trailing: Icon(Icons.arrow_forward_ios, size: 14, color: genderColor.withOpacity(0.5)),
         onTap: () {
           if (isFemale) {
-            // Females go to the original page
+            // Filter only Females
+            final femaleOnlyList = allUsers.where((u) => u.gender.toLowerCase() == 'female').toList();
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => inkwellcontainers()),
+              MaterialPageRoute(
+                builder: (context) => FemaleDirectoryPage(femaleUsers: femaleOnlyList),
+              ),
             );
           } else {
-            // Logic: Filter only males and send to the MaleDirectoryPage
+            // Filter only Males
             final maleOnlyList = allUsers.where((u) => u.gender.toLowerCase() == 'male').toList();
-
             Navigator.push(
               context,
               MaterialPageRoute(
@@ -138,19 +126,15 @@ class UserListTile extends StatelessWidget {
   }
 }
 
-/// 5. Professional Filtered Page - Shows ONLY Males
+/// 3. Filtered Page for Males
 class MaleDirectoryPage extends StatelessWidget {
   final List<UserProfile> maleUsers;
-
   const MaleDirectoryPage({super.key, required this.maleUsers});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Male User Records"),
-        backgroundColor: Colors.blue.shade100,
-      ),
+      appBar: AppBar(title: const Text("Male User Records"), backgroundColor: Colors.blue.shade100),
       body: ListView.builder(
         padding: const EdgeInsets.all(16),
         itemCount: maleUsers.length,
@@ -159,7 +143,33 @@ class MaleDirectoryPage extends StatelessWidget {
             child: ListTile(
               leading: const Icon(Icons.male, color: Colors.blue),
               title: Text(maleUsers[index].name, style: const TextStyle(fontWeight: FontWeight.bold)),
-              subtitle: const Text("Filter Applied: Gender=Male"),
+              subtitle: const Text("Category: Verified Male Profile"),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+/// 4. Filtered Page for Females (Equality Added)
+class FemaleDirectoryPage extends StatelessWidget {
+  final List<UserProfile> femaleUsers;
+  const FemaleDirectoryPage({super.key, required this.femaleUsers});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text("Female User Records"), backgroundColor: Colors.pink.shade100),
+      body: ListView.builder(
+        padding: const EdgeInsets.all(16),
+        itemCount: femaleUsers.length,
+        itemBuilder: (context, index) {
+          return Card(
+            child: ListTile(
+              leading: const Icon(Icons.female, color: Colors.pink),
+              title: Text(femaleUsers[index].name, style: const TextStyle(fontWeight: FontWeight.bold)),
+              subtitle: const Text("Category: Verified Female Profile"),
             ),
           );
         },
