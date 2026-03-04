@@ -33,7 +33,7 @@ class MyApp extends StatelessWidget {
 }
 
 class UserDirectoryPage extends StatelessWidget {
-   UserDirectoryPage({super.key});
+  UserDirectoryPage({super.key});
 
   // 2. Data Source - In a real app, this would come from an API or Database
   final List<UserProfile> users = [
@@ -59,13 +59,13 @@ class UserDirectoryPage extends StatelessWidget {
           ],
         ),
       ),
-      // 3. ListView.builder is more professional for performance
       body: ListView.separated(
         padding: const EdgeInsets.all(12),
         itemCount: users.length,
         separatorBuilder: (context, index) => const SizedBox(height: 8),
         itemBuilder: (context, index) {
-          return UserListTile(user: users[index]);
+          // Pass the full list to the tile so it can filter later
+          return UserListTile(user: users[index], allUsers: users);
         },
       ),
     );
@@ -75,8 +75,9 @@ class UserDirectoryPage extends StatelessWidget {
 /// 4. Custom Widget - Separating logic into its own class
 class UserListTile extends StatelessWidget {
   final UserProfile user;
+  final List<UserProfile> allUsers; // Access to full list for filtering
 
-  const UserListTile({super.key, required this.user});
+  const UserListTile({super.key, required this.user, required this.allUsers});
 
   @override
   Widget build(BuildContext context) {
@@ -108,17 +109,58 @@ class UserListTile extends StatelessWidget {
           user.gender.toUpperCase(),
           style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
         ),
-        // Now everyone gets an arrow icon, styled by gender
         trailing: Icon(
             Icons.arrow_forward_ios,
             size: 14,
             color: genderColor.withOpacity(0.5)
         ),
         onTap: () {
-          // Navigation now works for both males and females
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => inkwellcontainers()),
+          if (isFemale) {
+            // Females go to the original page
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => inkwellcontainers()),
+            );
+          } else {
+            // Logic: Filter only males and send to the MaleDirectoryPage
+            final maleOnlyList = allUsers.where((u) => u.gender.toLowerCase() == 'male').toList();
+
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => MaleDirectoryPage(maleUsers: maleOnlyList),
+              ),
+            );
+          }
+        },
+      ),
+    );
+  }
+}
+
+/// 5. Professional Filtered Page - Shows ONLY Males
+class MaleDirectoryPage extends StatelessWidget {
+  final List<UserProfile> maleUsers;
+
+  const MaleDirectoryPage({super.key, required this.maleUsers});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Male User Records"),
+        backgroundColor: Colors.blue.shade100,
+      ),
+      body: ListView.builder(
+        padding: const EdgeInsets.all(16),
+        itemCount: maleUsers.length,
+        itemBuilder: (context, index) {
+          return Card(
+            child: ListTile(
+              leading: const Icon(Icons.male, color: Colors.blue),
+              title: Text(maleUsers[index].name, style: const TextStyle(fontWeight: FontWeight.bold)),
+              subtitle: const Text("Filter Applied: Gender=Male"),
+            ),
           );
         },
       ),
